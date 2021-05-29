@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    Dashboard
+    <div class="table-data">
+        <h2>Available books</h2>
+        <table border="1">
+            <tr>
+                <th>Book Name</th>
+                <th>Count</th>
+            </tr>
+
+            <% if(tableData.length!=0){ var i=1; tableData.forEach(function(data){ %>
+                <tr>
+                    <td id=<%='name'+i %>>
+                        <%=data.name %>
+                    </td>
+                    <td>
+                        <%=data.count %>
+                    </td>
+                    <td>
+                        <form action="/checkout" method="POST">
+                        <input type="hidden" value="<%=data.name %>" name="book">
+                        <input id=<%=i %> type="submit" value="Request Checkout">
+                        </form>
+                    </td>
+                </tr>
+                <% i++; }) %>
+                    <% } else{ %>
+                        <tr>
+                            <td colspan="7">No Data Found</td>
+                        </tr>
+                        <% } %>
+        </table>
+    </div>
+
+    <div class="user-data">
+        <h2>Book issued</h2>
+        <table border="1">
+            <tr>
+                <th>Book Name</th>
+                <th>Return</th>
+            </tr>
+
+            <% if(userData.length!=0){ var i=1; userData.forEach(function(data){ %>
+                <tr>
+                    <td>
+                        <%=data.name %>
+                    </td>
+                    <td>
+                        <% if(data.fine > 0){ %>
+                        <form action="/return" method="POST">
+                        <input type="hidden" value="<%=data.uuid %>" name="uuid">
+                        <input id=<%=i %> type="submit" value=<%='Pay_'+data.fine+'_rupees_and_return' %>>
+                        </form>
+                        <% }else{ %>
+                        <form action="/return" method="POST">
+                        <input type="hidden" value="<%=data.uuid %>" name="uuid">
+                        <input id=<%='d'+i %> type="submit" value="Return">
+                        </form>
+                        <% } %>
+                    </td>
+                </tr>
+                <% i++; }) %>
+                    <% } else{ %>
+                        <tr>
+                            <td colspan="7">No Data Found</td>
+                        </tr>
+                        <% } %>
+        </table>
+    </div>
+    <form action="/logout" method="POST">
+        <input type="submit" value="Logout">
+    </form>
+</body>
+</html>

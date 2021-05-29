@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    Admin Dashboard
+    <div class="table-data">
+        <h2>All books</h2>
+        <table border="1">
+            <tr>
+                <th>Book Name</th>
+                <th>Count</th>
+            </tr>
+
+            <% if(tableData.length!=0){ var i=1; tableData.forEach(function(data){ %>
+                <tr>
+                    <td>
+                        <%=data.name %>
+                    </td>
+                    <td>
+                        <%=data.count %>
+                    </td>
+                </tr>
+                <% i++; }) %>
+                    <% } else{ %>
+                        <tr>
+                            <td colspan="7">No Data Found</td>
+                        </tr>
+                        <% } %>
+        </table>
+    </div>
+
+    <h3>Add books</h3>
+    <form action="/dashboard" method="POST">
+        Book Name: <input type="text" name="bookname">
+        <br>
+        <input type="submit" value="Enter">
+    </form>
+    
+    <div class="user-data">
+        <h2>Requests</h2>
+        <table border="1">
+            <tr>
+                <th>Book Name</th>
+                <th>Email</th>
+                <th>Response</th>
+            </tr>
+
+            <% if(userData.length!=0){ var i=1; userData.forEach(function(data){ %>
+                <tr>
+                    <td><%=data.name %></td>
+                    <td><%=data.issuereq %></td>
+                    <td>
+                        <form action="/accept" method="POST">
+                        <input type="hidden" value="<%=data.name %>" name="book">
+                        <input type="hidden" value="<%=data.issuereq %>" name="name">
+                        <input id=<%=i %> type="submit" value="Accept">
+                        </form>
+                        <form action="/decline" method="POST">
+                        <input type="hidden" value="<%=data.issuereq %>" name="name">
+                        <input type="hidden" value="<%=data.name %>" name="book">
+                        <input id=<%='d'+i %> type="submit" value="Decline">
+                        </form>
+                    </td>
+                </tr>
+                <% }) %>
+                    <% } else{ %>
+                        <tr>
+                            <td colspan="7">No Data Found</td>
+                        </tr>
+                        <% } %>
+        </table>
+    </div>
+    <div class="issue-data">
+        <h2>Issue Log</h2>
+        <table border="1">
+            <tr>
+                <th>Book Name</th>
+                <th>Issued By</th>
+                <th>Issued On</th>
+                <th>Return By</th>
+                <th>Fine (in Rupees)</th>
+            </tr>
+
+            <% if(issueData.length!=0){ var i=1; issueData.forEach(function(data){ %>
+                    <tr>
+                        <td><%=data.name %></td>
+                        <td><%=data.issuedby %></td>
+                        <td><%=data.issuedon %></td>
+                        <td><%=data.returnby %></td>
+                        <td><%=data.fine %></td>
+                    </tr>
+                <% }) %>
+                    <% } else{ %>
+                        <tr>
+                            <td colspan="7">No Data Found</td>
+                        </tr>
+                        <% } %>
+        </table>
+    </div>
+    <form action="/logout" method="POST">
+        <input type="submit" value="Logout">
+    </form>
+</body>
+
+</html>
