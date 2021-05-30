@@ -61,15 +61,20 @@ router.get('/dashboard', (req, res) => {
 });
 
 router.post('/dashboard', (req, res, next) => {
-    const { v4: uuidv4 } = require('uuid');
-    var uuid = uuidv4();
-    connection.query('insert into books (uuid, name) values ('+
-    connection.escape(uuid) + ',' +
-    connection.escape(req.body.bookname) + ');',
-    (error, results, fields) => {
-        if(error) throw error;
+    if(req.body.quantity==''){
+        req.body.quantity=1;
     }
-    );
+    for(let i=0;i<req.body.quantity;i++){
+        const { v4: uuidv4 } = require('uuid');
+        var uuid = uuidv4();
+        connection.query('insert into books (uuid, name) values ('+
+        connection.escape(uuid) + ',' +
+        connection.escape(req.body.bookname) + ');',
+        (error, results, fields) => {
+            if(error) throw error;
+        }
+        );
+    }
     res.redirect('/dashboard');
 });
 
