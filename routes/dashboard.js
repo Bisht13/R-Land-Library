@@ -35,10 +35,10 @@ router.get('/dashboard', (req, res) => {
                     });
             });
     } else if (req.session.loggedIn) {
-        connection.query('select name,count(name) as count from books where (issuedby!="'+req.session.email+'" and issuereq is NULL) or (issuedby is null and issuereq is null) group by name order by name;',
+        connection.query('select name,count(name) as count from books where (issuedby!='+connection.escape(req.session.email)+' and issuereq is NULL) or (issuedby is null and issuereq is null) group by name order by name;',
             (error, results, fields) => {
                 if (error) throw error;
-                connection.query('select * from books where issuedby = "'+req.session.email+'";',
+                connection.query('select * from books where issuedby = '+connection.escape(req.session.email)+';',
                     (Uerror, Uresults, Ufields) => {
                         if (Uerror) throw Uerror;
                         for(let i=0;i<Uresults.length;i++){
@@ -63,9 +63,9 @@ router.get('/dashboard', (req, res) => {
 router.post('/dashboard', (req, res, next) => {
     const { v4: uuidv4 } = require('uuid');
     var uuid = uuidv4();
-    connection.query('insert into books (uuid, name) values ("'+
-    uuid + '","' +
-    req.body.bookname + '");',
+    connection.query('insert into books (uuid, name) values ('+
+    connection.escape(uuid) + ',' +
+    connection.escape(req.body.bookname) + ');',
     (error, results, fields) => {
         if(error) throw error;
     }
@@ -74,10 +74,10 @@ router.post('/dashboard', (req, res, next) => {
 });
 
 router.post('/checkout', (req, res) => {
-    connection.query('select uuid from books where name= "'+req.body.book+'" and issuereq is null and issuedby is null;',
+    connection.query('select uuid from books where name= '+connection.escape(req.body.book)+' and issuereq is null and issuedby is null;',
             (error, results, fields) => {
                 if (error) throw error;
-                connection.query('update books set issuereq="'+req.session.email+'" where uuid= "'+results[0].uuid+'";',
+                connection.query('update books set issuereq='+connection.escape(req.session.email)+' where uuid= '+connection.escape(results[0].uuid)+';',
                     (Uerror, Uresults, Ufields) => {
                         if (Uerror) throw Uerror;
                     });
@@ -86,10 +86,10 @@ router.post('/checkout', (req, res) => {
 });
 
 router.post('/accept', (req, res) => {
-    connection.query('select uuid from books where name="'+req.body.book+'" and issuereq="'+req.body.name+'";',
+    connection.query('select uuid from books where name='+connection.escape(req.body.book)+' and issuereq='+connection.escape(req.body.name)+';',
             (error, results, fields) => {
                 if (error) throw error;
-                connection.query('update books set issuereq=null,issuedby="'+req.body.name+'",issuedon="'+getDateTime()+'",returnby="'+getReturnDateTime()+'" where uuid="'+results[0].uuid+'";',
+                connection.query('update books set issuereq=null,issuedby='+connection.escape(req.body.name)+',issuedon='+connection.escape(getDateTime())+',returnby='+connection.escape(getReturnDateTime())+' where uuid='+connection.escape(results[0].uuid)+';',
                 (Error, Results, Fields) => {
                     if (Error) throw Error;
                 });
@@ -98,10 +98,10 @@ router.post('/accept', (req, res) => {
 });
 
 router.post('/decline', (req, res) => {
-    connection.query('select uuid from books where name="'+req.body.book+'" and issuereq="'+req.body.name+'";',
+    connection.query('select uuid from books where name='+connection.escape(req.body.book)+' and issuereq='+connection.escape(req.body.name)+';',
             (error, results, fields) => {
                 if (error) throw error;
-                connection.query('update books set issuereq=null where uuid="'+results[0].uuid+'";',
+                connection.query('update books set issuereq=null where uuid='+connection.escape(results[0].uuid)+';',
                 (Error, Results, Fields) => {
                     if (Error) throw Error;
                 });
@@ -110,7 +110,7 @@ router.post('/decline', (req, res) => {
 });
 
 router.post('/return', (req, res) => {
-    connection.query('update books set issuedby=null,issuedon=null,returnby=null where uuid="'+req.body.uuid+'";',
+    connection.query('update books set issuedby=null,issuedon=null,returnby=null where uuid='+connection.escape(req.body.uuid)+';',
             (error, results, fields) => {
                 if (error) throw error;
             });

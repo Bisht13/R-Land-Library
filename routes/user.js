@@ -32,7 +32,7 @@ router.post('/login', (req, res, next) => {
   var hash = crypto.createHash('sha512').update(req.body.password).digest('base64');
 
   connection.query(
-    'select uuid,password,admin from users where email="' + req.body.email + '";',
+    'select uuid,password,admin from users where email=' + connection.escape(req.body.email) + ';',
     (error, results, fields) => {
       if (error) {
         res.writeHead(500);
@@ -74,17 +74,17 @@ router.post('/register', (req, res) => {
     var hash = crypto.createHash('sha512').update(req.body.password).digest('base64');
     const { v4: uuidv4 } = require('uuid');
     var uuid = uuidv4();
-    connection.query('SELECT * FROM users WHERE email LIKE "'+req.body.email+'" LIMIT 1;',
+    connection.query('SELECT * FROM users WHERE email LIKE '+connection.escape(req.body.email)+' LIMIT 1;',
     (Error, Results, Fields) => {
       if(Results.length!=0){
         alert('An id already exists with this email. Try again.');
         res.redirect('/register');
       }else{
         connection.query(
-          'insert into users (uuid,email,password) values ("' +
-          uuid + '", "' +
-          req.body.email + '", "' +
-          hash + '");',
+          'insert into users (uuid,email,password) values (' +
+          connection.escape(uuid) + ', ' +
+          connection.escape(req.body.email) + ', ' +
+          connection.escape(hash) + ');',
           (error, results, fields) => {
             if (error) {
               res.sendStatus(500);
